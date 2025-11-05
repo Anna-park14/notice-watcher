@@ -7,7 +7,7 @@ import os
 import json
 
 # ===== 사용자 설정 =====
-KEYWORD = "임상시험"
+KEYWORD = "ai"
 URL = "https://www.bizinfo.go.kr/web/lay1/bbs/S1T122C128/AS/74/list.do?schEndAt=N"
 PERSIST_FILE = "sent_titles.json"
 
