@@ -52,7 +52,7 @@ def check_notice():
         resp.raise_for_status()
         soup = BeautifulSoup(resp.text, "html.parser")
 
-        notices = soup.select("td.tit > a")
+        notices = soup.select("a[title]")
         new_found = False
 
         for n in notices:
