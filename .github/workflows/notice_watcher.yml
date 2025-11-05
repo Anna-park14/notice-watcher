@@ -24,6 +24,8 @@ jobs:
 
     - name: Run Notice Watcher
       env:
-        APP_PASSWORD: ${{ secrets.APP_PASSWORD }}
+        EMAIL_ADDRESS: ${{ secrets.EMAIL_ADDRESS }}
+        EMAIL_PASSWORD: ${{ secrets.EMAIL_PASSWORD }}
       run: |
         python watch_notice.py
+
