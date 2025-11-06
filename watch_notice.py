@@ -80,18 +80,19 @@ def fetch_site_notices(site):
 
             for a in items:
                 title = a.get_text(strip=True)
-                href = a.get("href", "")
-                if not href:
-                    continue
-                 # 사이트별 링크 보정
-                if "bizinfo.go.kr" in prefix:
-                    # bizinfo 공고 페이지 URL
-                    full_link = urllib.parse.urljoin("https://www.bizinfo.go.kr/web/lay1/bbs/S1T122C128/AS/74/", href.split("pblancId=")[-1].split("&")[0] + "?pblancId=" + href.split("pblancId=")[-1].split("&")[0])
+            # 링크 처리
+            href = a.get("href", "")
+            if not href:
+                continue
+            
+            # bizinfo 공고 URL로 변환
+            if "bizinfo.go.kr" in prefix or "bizinfo.go.kr" in href:
+                if href.startswith("/view.do?pblancId="):
+                    full_link = "https://www.bizinfo.go.kr/web/lay1/bbs/S1T122C128/AS/74" + href
                 else:
-                    full_link = href if href.startswith("http") else urllib.parse.urljoin(prefix, href)
-
+                    full_link = urllib.parse.urljoin(prefix, href)
+            else:
                 full_link = href if href.startswith("http") else urllib.parse.urljoin(prefix, href)
-                uid = extract_unique_id(href)
 
                 # ✅ 페이지 내/사이트 내 중복 제거
                 if (title, full_link) in seen_within_run:
