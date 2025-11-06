@@ -1,0 +1,18 @@
+{
+  "sites": [
+    {
+      "name": "기업마당",
+      "list_url_template": "https://www.bizinfo.go.kr/web/lay1/bbs/S1T122C128/AS/74/list.do?cpage={page}&schEndAt=N",
+      "link_prefix": "https://www.bizinfo.go.kr",
+      "pages_to_check": 10,
+      "item_selector": "a[title]" 
+    },
+    {
+      "name": "NTIS",
+      "list_url_template": "https://www.ntis.go.kr/notice/list.do?currentPage={page}",
+      "link_prefix": "https://www.ntis.go.kr",
+      "pages_to_check": 5,
+      "item_selector": "a.notice-link" 
+    }
+  ]
+}
