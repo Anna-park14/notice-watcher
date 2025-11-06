@@ -5,6 +5,9 @@ on:
     - cron: "0 * * * *"   # 매시 정각마다 실행 (한국시간 +9 고려하면 약간 차이 있음)
   workflow_dispatch:      # 수동 실행 버튼 추가
 
+permissions:
+  contents: write   # ✅ 중요: 커밋/푸시 허용
+
 jobs:
   run-notice:
     runs-on: ubuntu-latest
@@ -28,4 +31,16 @@ jobs:
         EMAIL_PASSWORD: ${{ secrets.EMAIL_PASSWORD }}
       run: |
         python watch_notice.py
+
+    - name: Commit and Push sent_titles.json
+      run: |
+        git config user.name "github-actions"
+        git config user.email "github-actions@github.com"
+        git add sent_titles.json
+        if ! git diff --cached --quiet; then
+          git commit -m "Update sent_titles.json"
+          git push
+        else
+          echo "No changes to commit"
+        fi        
 
