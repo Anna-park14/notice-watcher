@@ -83,6 +83,12 @@ def fetch_site_notices(site):
                 href = a.get("href", "")
                 if not href:
                     continue
+                 # 사이트별 링크 보정
+                if "bizinfo.go.kr" in prefix:
+                    # bizinfo 공고 페이지 URL
+                    full_link = urllib.parse.urljoin("https://www.bizinfo.go.kr/web/lay1/bbs/S1T122C128/AS/74/", href.split("pblancId=")[-1].split("&")[0] + "?pblancId=" + href.split("pblancId=")[-1].split("&")[0])
+                else:
+                    full_link = href if href.startswith("http") else urllib.parse.urljoin(prefix, href)
 
                 full_link = href if href.startswith("http") else urllib.parse.urljoin(prefix, href)
                 uid = extract_unique_id(href)
