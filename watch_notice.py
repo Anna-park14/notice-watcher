@@ -65,9 +65,10 @@ def fetch_site_notices(site):
     template = site.get("list_url_template")
     prefix = site.get("link_prefix", "")
     selector = site.get("item_selector", "a[title]")
-    max_pages = min(site.get("pages_to_check", 1), 10)  # 안전장치: 최대 10
+    max_pages = min(site.get("pages_to_check", 1), 10)
 
-    new_notices = []  # (site_name, id, title, url)
+    new_notices = []
+    seen_within_run = set()  # ✅ 새로 추가: 이번 실행 내 중복 제거
 
     for page in range(1, max_pages+1):
         url = template.format(page=page)
@@ -76,27 +77,32 @@ def fetch_site_notices(site):
             resp.raise_for_status()
             soup = BeautifulSoup(resp.text, "html.parser")
             items = soup.select(selector)
-            if not items:
-                # 사이트별로 선택자가 다를 수 있음. 로그 남김.
-                # print(f"[{name}] page {page}: no items found with selector {selector}")
-                pass
+
             for a in items:
                 title = a.get_text(strip=True)
                 href = a.get("href", "")
                 if not href:
                     continue
+
                 full_link = href if href.startswith("http") else urllib.parse.urljoin(prefix, href)
                 uid = extract_unique_id(href)
-                # 키워드 OR 체크
-                if any(k in title for k in KEYWORDS):
-                    # 중복 확인
+
+                # ✅ 페이지 내/사이트 내 중복 제거
+                if (title, full_link) in seen_within_run:
+                    continue
+                seen_within_run.add((title, full_link))
+
+                # ✅ 키워드 OR 검색 (대소문자 무시 적용)
+                if any(k.lower() in title.lower() for k in KEYWORDS):
                     seen = sent_store.get(name, [])
                     if uid not in seen:
                         new_notices.append((name, uid, title, full_link))
-            # 소량의 딜레이: 사이트에 부담주지 않기 위함
+
             time.sleep(0.2)
+
         except Exception as e:
             print(f"[{name}] error fetching page {page}: {e}")
+
     return new_notices
 
 # ===== 전체 수집 =====
