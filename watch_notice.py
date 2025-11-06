@@ -100,6 +100,8 @@ def fetch_site_notices(site):
             items = soup.select(selector)
 
             for a in items:
+                print("Found link:", a.get("href"), a.get_text(strip=True))  # ✅ 디버그용 추가
+
                 title = a.get_text(strip=True)
                 href = a.get("href", "")
                 if not href:
