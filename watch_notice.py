@@ -45,15 +45,19 @@ sites = config.get("sites", [])
 
 # ===== 도우미: URL에서 고유 ID 추출 =====
 def extract_unique_id(href):
-    # bizinfo 예: view.do?pblancId=PBLN_000000000116117
-    # 일반적으로 query param 중 pblancId, id, noticeId 등 우선 검색
     parsed = urllib.parse.urlparse(href)
     qs = urllib.parse.parse_qs(parsed.query)
+
+    # NTIS 공고 고유값
+    if "roRndUid" in qs and qs["roRndUid"]:
+        return qs["roRndUid"][0]
+
+    # 다른 사이트들 공통 처리
     for key in ("pblancId","id","noticeId","seq","article_seq","idx"):
         if key in qs and qs[key]:
             return qs[key][0]
-    # fallback: 전체 href (짧게)
-    return href
+
+    return href  # fallback
 
 # ===== 사이트별 검사 =====
 def fetch_site_notices(site):
