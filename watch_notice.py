@@ -10,7 +10,7 @@ CONFIG_FILE = "config.json"
 PERSIST_FILE = "sent_titles.json"
 
 # 키워드: 환경변수 KEYWORDS 또는 기본값 (쉼표로 구분). OR 연산.
-raw_keywords = os.environ.get("KEYWORDS", "임상시험")  # 예: "임상시험,혈당,디지털"
+raw_keywords = os.environ.get("바이오", "헬스")  # 예: "임상시험,혈당,디지털"
 KEYWORDS = [k.strip() for k in raw_keywords.split(",") if k.strip()]
 
 # 이메일 (환경변수에서)
