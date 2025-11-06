@@ -7,8 +7,6 @@
       "item_selector": "td.tit > a",
       "pages_to_check": 10
     }
-  ]
-}
 ,
     {
       "name": "NTIS",
