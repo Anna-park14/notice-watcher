@@ -8,6 +8,10 @@ import os
 import json
 import time
 import urllib.parse
+from selenium import webdriver
+from selenium.webdriver.chrome.service import Service
+from selenium.webdriver.chrome.options import Options
+from webdriver_manager.chrome import ChromeDriverManager
 
 # ===== 설정 로드 =====
 CONFIG_FILE = "config.json"
@@ -72,12 +76,27 @@ def fetch_site_notices(site):
     new_notices = []
     seen_within_run = set()  # ✅ 새로 추가: 이번 실행 내 중복 제거
 
+    use_selenium = "기업마당" in name
+     
     for page in range(1, max_pages+1):
         url = template.format(page=page)
         try:
-            resp = requests.get(url, timeout=20)
-            resp.raise_for_status()
-            soup = BeautifulSoup(resp.text, "html.parser")
+            if use_selenium:
+                options = Options()
+                options.add_argument("--headless=new")
+                options.add_argument("--no-sandbox")
+                options.add_argument("--disable-dev-shm-usage")
+                driver = webdriver.Chrome(service=Service(ChromeDriverManager().install()), options=options)
+                driver.get(url)
+                time.sleep(2)  # 페이지 로딩 대기
+                html = driver.page_source
+                driver.quit()
+                soup = BeautifulSoup(html, "html.parser")
+            else:
+                resp = requests.get(url, timeout=20)
+                resp.raise_for_status()
+                soup = BeautifulSoup(resp.text, "html.parser")
+
             items = soup.select(selector)
 
             for a in items:
@@ -89,12 +108,10 @@ def fetch_site_notices(site):
                 full_link = href if href.startswith("http") else urllib.parse.urljoin(prefix, href)
                 uid = extract_unique_id(href)
 
-                # ✅ 페이지 내/사이트 내 중복 제거
                 if (title, full_link) in seen_within_run:
                     continue
                 seen_within_run.add((title, full_link))
 
-                # ✅ 키워드 OR 검색 (대소문자 무시 적용)
                 if any(k.lower() in title.lower() for k in KEYWORDS):
                     seen = sent_store.get(name, [])
                     if uid not in seen:
@@ -106,7 +123,6 @@ def fetch_site_notices(site):
             print(f"[{name}] error fetching page {page}: {e}")
 
     return new_notices
-
 # ===== 전체 수집 =====
 all_new = {}
 for site in sites:
