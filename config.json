@@ -11,8 +11,8 @@
       "name": "NTIS",
       "list_url_template": "https://www.ntis.go.kr/rndgate/eg/un/ra/mng.do",
       "link_prefix": "https://www.ntis.go.kr",
-      "pages_to_check": 5,
-      "item_selector": "a.notice-link" 
+      "pages_to_check": 10,
+      "item_selector": "a[onclick*='fn_view']" 
     }
   ]
 }
