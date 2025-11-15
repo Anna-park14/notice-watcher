@@ -2,7 +2,7 @@
   "sites": [
     {
       "name": "기업마당",
-      "list_url_template": "https://www.bizinfo.go.kr/web/lay1/bbs/S1T122C128/AS/74/list.do?schEndAt=N&page={page}",
+      "list_url_template": "https://www.bizinfo.go.kr/web/lay1/bbs/S1T122C128/AS/74/list.do?rows=15&cpage={page}",
       "link_prefix": "https://www.bizinfo.go.kr",
       "item_selector": "a[title]",
       "pages_to_check": 10
