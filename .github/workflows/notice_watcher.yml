@@ -1,59 +1,45 @@
 name: Notice Watcher
 
-
-
 on:
-schedule:
-  - cron: "0 6 * * *"   # 매일 한국시간 15시(UTC 06시)에 실행
-  workflow_dispatch:      # 수동 실행 버튼 추가
-
-
+  schedule:
+    - cron: "0 6 * * *"   # 매일 한국시간 15시(UTC 06시)에 실행
+  workflow_dispatch:      # 수동 실행 버튼 추가
 
 permissions:
-  contents: write   # ✅ 중요: 커밋/푸시 허용
-
-
+  contents: write   # ✅ 중요: 커밋/푸시 허용
 
 jobs:
   run-notice:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-latest
 
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
 
+      - name: Set up Python
+        uses: actions/setup-python@v3
+        with:
+          python-version: "3.10"
 
-    steps:
-    - name: Checkout repository
-      uses: actions/checkout@v3
+      - name: Install dependencies
+        run: |
+          pip install requests beautifulsoup4 schedule selenium webdriver-manager
 
+      - name: Run Notice Watcher
+        env:
+          EMAIL_ADDRESS: ${{ secrets.EMAIL_ADDRESS }}
+          EMAIL_PASSWORD: ${{ secrets.EMAIL_PASSWORD }}
+        run: |
+          python watch_notice.py
 
-
-    - name: Set up Python
-      uses: actions/setup-python@v3
-      with:
-        python-version: "3.10"
-
-
-
-    - name: Install dependencies
-      run: |
-        pip install requests beautifulsoup4 schedule selenium webdriver-manager
-
-
-
-    - name: Run Notice Watcher
-      env:
-        EMAIL_ADDRESS: ${{ secrets.EMAIL_ADDRESS }}
-        EMAIL_PASSWORD: ${{ secrets.EMAIL_PASSWORD }}
-      run: |
-        python watch_notice.py
-        
-    - name: Commit and Push sent_titles.json
-      run: |
-        git config user.name "github-actions"
-        git config user.email "github-actions@github.com"
-        git add sent_titles.json
-        if ! git diff --cached --quiet; then
-          git commit -m "Update sent_titles.json"
-          git push
-        else
-          echo "No changes to commit"
-        fi        
+      - name: Commit and Push sent_titles.json
+        run: |
+          git config user.name "github-actions"
+          git config user.email "github-actions@github.com"
+          git add sent_titles.json
+          if ! git diff --cached --quiet; then
+            git commit -m "Update sent_titles.json"
+            git push
+          else
+            echo "No changes to commit"
+          fi
