@@ -80,6 +80,7 @@ def fetch_site_notices(site):
      
     for page in range(1, max_pages+1):
         url = template.format(page=page)
+        print(f"[{name}] Fetching URL: {url}")  # 로그 출력 추가
         try:
             if use_selenium:
                 options = Options()
