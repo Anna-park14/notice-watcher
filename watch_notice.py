@@ -121,7 +121,9 @@ def fetch_site_notices(site):
                     seen = sent_store.get(name, [])
                     if uid not in seen:
                         new_notices.append((name, uid, title, full_link))
-           print(f"[{name}] Page {page} found {len(new_notices)} new notices so far")
+                        
+            print(f"[{name}] Page {page} found {len(new_notices)} new notices so far")
+            
             time.sleep(0.2)
 
         except Exception as e:
