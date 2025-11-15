@@ -3,8 +3,8 @@ name: Notice Watcher
 
 
 on:
-  schedule:
-    - cron: "0 6 * * *"   # 매일 한국시간 15시(UTC 06시)에 실행
+schedule:
+  - cron: "0 6 * * *"   # 매일 한국시간 15시(UTC 06시)에 실행
   workflow_dispatch:      # 수동 실행 버튼 추가
 
 
