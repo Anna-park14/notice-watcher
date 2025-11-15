@@ -146,9 +146,11 @@ else:
     # 이메일 본문 작성: 사이트별 그룹화
     lines = []
     for site_name, notices in all_new.items():
+        print(f"Preparing email body for {site_name} with {len(notices)} notices")
         lines.append(f"{site_name}")
         idx = 1
         for (_, uid, title, link) in notices:
+            print(f" - {title}")
             lines.append(f"{idx}) {title}\n {link}")
             idx += 1
         lines.append("")  # 빈줄
