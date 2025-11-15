@@ -3,17 +3,16 @@
     {
       "name": "기업마당",
       "list_url_template": "https://www.bizinfo.go.kr/web/lay1/bbs/S1T122C128/AS/74/list.do?schEndAt=N&page={page}",
-      "link_prefix": "https://www.bizinfo.go.kr", 
-      "item_selector": "td.tit > a",
+      "link_prefix": "https://www.bizinfo.go.kr",
+      "item_selector": "a[title]",
       "pages_to_check": 10
-    }
-,
+    },
     {
       "name": "NTIS",
       "list_url_template": "https://www.ntis.go.kr/rndgate/eg/un/ra/mng.do",
       "link_prefix": "https://www.ntis.go.kr",
       "pages_to_check": 10,
-      "item_selector": "a[onclick*='fn_view']" 
+      "item_selector": "a[onclick*='fn_view']"
     }
   ]
 }
