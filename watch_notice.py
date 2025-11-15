@@ -120,6 +120,7 @@ def fetch_site_notices(site):
                 if any(k.lower() in title.lower() for k in KEYWORDS):
                     seen = sent_store.get(name, [])
                     if uid not in seen:
+                        print(f"[{name}] Adding notice: {title} ({full_link})")
                         new_notices.append((name, uid, title, full_link))
                         
             print(f"[{name}] Page {page} found {len(new_notices)} new notices so far")
