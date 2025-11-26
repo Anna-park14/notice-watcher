@@ -13,8 +13,11 @@ from webdriver_manager.chrome import ChromeDriverManager
 import pymsteams
 
 # Teams Webhook URL
-TEAMS_WEBHOOK_URL = "https://neurophet2016.webhook.office.com/webhookb2/6e84a218-f169-476d-a79c-f6b8d1c007bd@0e0de970-ba32-48a4-a048-99d48e6eb282/IncomingWebhook/c043c278094d4fbb92b52e917c8b795b/d6e959e9-d502-42d4-b201-d0e98040dddd/V2hXg7E-MfKogo5N_Zv9kf8pFumNK0xN7OoT8fsOafrXM1"
-
+TEAMS_WEBHOOK_URL = os.environ.get("TEAMS_WEBHOOK_URL")
+if not TEAMS_WEBHOOK_URL:
+    print("ERROR: TEAMS_WEBHOOK_URL not set in environment")
+    raise SystemExit(1)
+    
 # ===== 설정 로드 =====
 CONFIG_FILE = "config.json"
 PERSIST_FILE = "sent_titles.json"
