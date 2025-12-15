@@ -23,5 +23,20 @@
   ],
   "NTIS": [
     "1250766"
+  ],
+  "KHIDI": [
+    "/board/view?pageNum=1&rowCnt=10&no1=844&linkId=48935849&menuId=MENU01108&maxIndex=00489382079998&minIndex=00489187519998&schType=0&schText=&schStartDate=&schEndDate=&boardStyle=&categoryId=&continent=&country=",
+    "http://www.koreahealthtour.co.kr/",
+    "/mdtis",
+    "http://www.htdream.kr/",
+    "/board/view?pageNum=1&rowCnt=10&no1=850&linkId=48936509&menuId=MENU01108&maxIndex=00489382079998&minIndex=00489187519998&schType=0&schText=&schStartDate=&schEndDate=&boardStyle=&categoryId=&continent=&country=",
+    "/board/view?pageNum=1&rowCnt=10&no1=852&linkId=48936866&menuId=MENU01108&maxIndex=00489382079998&minIndex=00489187519998&schType=0&schText=&schStartDate=&schEndDate=&boardStyle=&categoryId=&continent=&country=",
+    "/kohes",
+    "https://www.medicalkorea.or.kr/ghip/index",
+    "/board/view?pageNum=1&rowCnt=10&no1=846&linkId=48935994&menuId=MENU01108&maxIndex=00489382079998&minIndex=00489187519998&schType=0&schText=&schStartDate=&schEndDate=&boardStyle=&categoryId=&continent=&country=",
+    "/khmi",
+    "/board/view?pageNum=1&rowCnt=10&no1=847&linkId=48936154&menuId=MENU01108&maxIndex=00489382079998&minIndex=00489187519998&schType=0&schText=&schStartDate=&schEndDate=&boardStyle=&categoryId=&continent=&country=",
+    "https://haspa.khidi.or.kr",
+    "/board/view?pageNum=1&rowCnt=10&no1=849&linkId=48936310&menuId=MENU01108&maxIndex=00489382079998&minIndex=00489187519998&schType=0&schText=&schStartDate=&schEndDate=&boardStyle=&categoryId=&continent=&country="
   ]
 }
