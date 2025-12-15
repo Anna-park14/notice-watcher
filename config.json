@@ -4,8 +4,8 @@
       "name": "기업마당",
       "list_url_template": "https://www.bizinfo.go.kr/web/lay1/bbs/S1T122C128/AS/74/list.do?rows=15&cpage={page}",
       "link_prefix": "https://www.bizinfo.go.kr/web/lay1/bbs/S1T122C128/AS/74/",
-      "item_selector": "a[title]",
-      "pages_to_check": 10
+      "pages_to_check": 10,
+      "item_selector": "a[title]"
     },
     {
       "name": "NTIS",
@@ -13,6 +13,13 @@
       "link_prefix": "https://www.ntis.go.kr",
       "pages_to_check": 10,
       "item_selector": "a[onclick*='fn_view']"
-    }
+    },
+    {
+      "name": "KHIDI",
+      "list_url_template": "https://www.khidi.or.kr/board?menuId=MENU01108",
+      "link_prefix": "https://www.khidi.or.kr/kps",
+      "pages_to_check": 10,
+      "item_selector": "a[title]"
+    }    
   ]
 }
