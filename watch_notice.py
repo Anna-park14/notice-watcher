@@ -84,12 +84,14 @@ def fetch_site_notices(site):
 
     new_notices = []
     seen_within_run = set()
+    seen_titles_in_site = set()
 
     use_selenium = "기업마당" in name
 
     for page in range(1, max_pages + 1):
         url = template.format(page=page)
         print(f"[{name}] Fetching URL: {url}")
+        
         try:
             if use_selenium:
                 options = Options()
@@ -108,32 +110,39 @@ def fetch_site_notices(site):
                 soup = BeautifulSoup(resp.text, "html.parser")
 
             items = soup.select(selector)
-            unique_items = list({a.get("href"): a for a in items}.values())
-
+           
+            unique_items = list({a.get("href"): a for a in items if a.get("href")}.values())
+    
             for a in unique_items:
-                print("Found link:", a.get("href"), a.get_text(strip=True))
-
                 title = a.get_text(strip=True)
                 href = a.get("href", "")
-                if not href:
+    
+                print("Found link:", href, title)
+    
+                if not title or not href:
                     continue
-
+    
+                # ✅ 같은 사이트 내 동일 제목 중복 제거 (공지사항 방지)
+                if title in seen_titles_in_site:
+                    continue
+                seen_titles_in_site.add(title)
+    
                 full_link = href if href.startswith("http") else urllib.parse.urljoin(prefix, href)
                 uid = extract_unique_id(href)
-
+    
+                # ✅ 실행 중 중복 제거
                 if (title, full_link) in seen_within_run:
                     continue
                 seen_within_run.add((title, full_link))
-
+    
+                # ✅ 키워드 필터
                 if any(k.lower() in title.lower() for k in KEYWORDS):
                     seen = sent_store.get(name, [])
                     if uid not in seen:
                         print(f"[{name}] Adding notice: {title} ({full_link})")
                         new_notices.append((name, uid, title, full_link))
-
-            print(f"[{name}] Page {page} found {len(new_notices)} new notices so far")
-
-            time.sleep(0.2)
+    
+            time.sleep(0.2)    
 
         except Exception as e:
             print(f"[{name}] error fetching page {page}: {e}")
