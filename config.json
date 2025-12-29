@@ -15,6 +15,13 @@
       "item_selector": "a[onclick*='fn_view']"
     },
     {
+      "name": "농림축산식품부",
+      "list_url_template": "https://www.mafra.go.kr/home/5108/subview.do",
+      "link_prefix": "https://www.mafra.go.kr/home/index.do",
+      "pages_to_check": 10,
+      "item_selector": "a[onclick*='fn_view']"
+    },
+    {
       "name": "KHIDI",
       "list_url_template": "https://www.khidi.or.kr/board?menuId=MENU01108",
       "link_prefix": "https://www.khidi.or.kr/kps",
