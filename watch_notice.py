@@ -11,6 +11,8 @@ from selenium.webdriver.chrome.service import Service
 from selenium.webdriver.chrome.options import Options
 from webdriver_manager.chrome import ChromeDriverManager
 import pymsteams
+def normalize_title(title: str) -> str:
+    return " ".join(title.split()).strip()
 
 # Teams Webhook URL
 TEAMS_WEBHOOK_URL = os.environ.get("TEAMS_WEBHOOK_URL")
@@ -128,21 +130,27 @@ def fetch_site_notices(site):
                 seen_titles_in_site.add(title)
     
                 full_link = href if href.startswith("http") else urllib.parse.urljoin(prefix, href)
-                uid = extract_unique_id(href)
+
+                # ✅ KHIDI는 제목을 UID로 사용 (URL 변경 방지)
+                if name == "KHIDI":
+                    uid = normalize_title(title)
+                else:
+                    uid = extract_unique_id(href)
+
     
                 # ✅ 실행 중 중복 제거
-                if (title, full_link) in seen_within_run:
+                if (name, uid) in seen_within_run:
                     continue
-                seen_within_run.add((title, full_link))
+                seen_within_run.add((name, uid))
+
     
-                # ✅ 키워드 필터
+                # ✅ 키워드 필터 + 누적 중복 제거
                 if any(k.lower() in title.lower() for k in KEYWORDS):
                     seen = sent_store.get(name, [])
                     if uid not in seen:
                         print(f"[{name}] Adding notice: {title} ({full_link})")
                         new_notices.append((name, uid, title, full_link))
-    
-            time.sleep(0.2)    
+                            time.sleep(0.2)    
 
         except Exception as e:
             print(f"[{name}] error fetching page {page}: {e}")
