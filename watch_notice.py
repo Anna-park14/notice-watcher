@@ -85,26 +85,36 @@ def fetch_site_notices(site):
     max_pages = min(site.get("pages_to_check", 1), 10)
 
     new_notices = []
+
+    # 실행 중 중복 방지 (사이트명 + UID)
     seen_within_run = set()
+
+    # 같은 사이트 내 동일 제목 중복 방지 (공지사항 문제)
     seen_titles_in_site = set()
 
+    # 기업마당만 Selenium 사용
     use_selenium = "기업마당" in name
 
     for page in range(1, max_pages + 1):
         url = template.format(page=page)
         print(f"[{name}] Fetching URL: {url}")
-        
+
         try:
             if use_selenium:
                 options = Options()
                 options.add_argument("--headless=new")
                 options.add_argument("--no-sandbox")
                 options.add_argument("--disable-dev-shm-usage")
-                driver = webdriver.Chrome(service=Service(ChromeDriverManager().install()), options=options)
+
+                driver = webdriver.Chrome(
+                    service=Service(ChromeDriverManager().install()),
+                    options=options
+                )
                 driver.get(url)
                 time.sleep(2)
                 html = driver.page_source
                 driver.quit()
+
                 soup = BeautifulSoup(html, "html.parser")
             else:
                 resp = requests.get(url, timeout=20)
@@ -112,45 +122,45 @@ def fetch_site_notices(site):
                 soup = BeautifulSoup(resp.text, "html.parser")
 
             items = soup.select(selector)
-           
-            unique_items = list({a.get("href"): a for a in items if a.get("href")}.values())
-    
+
+            # href 기준 1차 중복 제거
+            unique_items = list(
+                {a.get("href"): a for a in items if a.get("href")}.values()
+            )
+
             for a in unique_items:
                 title = a.get_text(strip=True)
                 href = a.get("href", "")
-    
-                print("Found link:", href, title)
-    
+
                 if not title or not href:
                     continue
-    
-                # ✅ 같은 사이트 내 동일 제목 중복 제거 (공지사항 방지)
+
+                # ✅ 제목 기준 중복 제거 (주소 달라도 동일 제목이면 차단)
                 if title in seen_titles_in_site:
                     continue
                 seen_titles_in_site.add(title)
-    
-                full_link = href if href.startswith("http") else urllib.parse.urljoin(prefix, href)
 
-                # ✅ KHIDI는 제목을 UID로 사용 (URL 변경 방지)
-                if name == "KHIDI":
-                    uid = normalize_title(title)
-                else:
-                    uid = extract_unique_id(href)
+                full_link = (
+                    href if href.startswith("http")
+                    else urllib.parse.urljoin(prefix, href)
+                )
 
-    
-                # ✅ 실행 중 중복 제거
+                uid = extract_unique_id(href)
+
+                # ✅ 실행 중 중복 제거 (사이트 + UID)
                 if (name, uid) in seen_within_run:
                     continue
                 seen_within_run.add((name, uid))
 
-    
                 # ✅ 키워드 필터 + 누적 중복 제거
                 if any(k.lower() in title.lower() for k in KEYWORDS):
-                    seen = sent_store.get(name, [])
-                    if uid not in seen:
-                        print(f"[{name}] Adding notice: {title} ({full_link})")
+                    sent_uids = sent_store.get(name, [])
+                    if uid not in sent_uids:
+                        print(f"[{name}] Adding notice: {title}")
                         new_notices.append((name, uid, title, full_link))
-                            time.sleep(0.2)    
+
+            # 페이지 간 딜레이
+            time.sleep(0.2)
 
         except Exception as e:
             print(f"[{name}] error fetching page {page}: {e}")
