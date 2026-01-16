@@ -94,78 +94,60 @@ def fetch_site_notices(site):
 
     # 기업마당만 Selenium 사용
     use_selenium = "기업마당" in name
+    use_title_dedup = name in ["기업마당", "KHIDI"]
 
-    for page in range(1, max_pages + 1):
-        url = template.format(page=page)
-        print(f"[{name}] Fetching URL: {url}")
+use_selenium = "기업마당" in name
+use_title_dedup = name in ["기업마당", "KHIDI"]
 
-        try:
-            if use_selenium:
-                options = Options()
-                options.add_argument("--headless=new")
-                options.add_argument("--no-sandbox")
-                options.add_argument("--disable-dev-shm-usage")
+for page in range(1, max_pages + 1):
+    url = template.format(page=page)
+    print(f"[{name}] Fetching URL: {url}")
 
-                driver = webdriver.Chrome(
-                    service=Service(ChromeDriverManager().install()),
-                    options=options
-                )
-                driver.get(url)
-                time.sleep(2)
-                html = driver.page_source
-                driver.quit()
+    try:
+        ...
+        items = soup.select(selector)
 
-                soup = BeautifulSoup(html, "html.parser")
-            else:
-                resp = requests.get(url, timeout=20)
-                resp.raise_for_status()
-                soup = BeautifulSoup(resp.text, "html.parser")
+        unique_items = list(
+            {a.get("href"): a for a in items if a.get("href")}.values()
+        )
 
-            items = soup.select(selector)
+        for a in unique_items:
+            title = a.get_text(strip=True)
+            href = a.get("href", "")
 
-            # href 기준 1차 중복 제거
-            unique_items = list(
-                {a.get("href"): a for a in items if a.get("href")}.values()
-            )
+            if not title or not href:
+                continue
 
-            for a in unique_items:
-                title = a.get_text(strip=True)
-                href = a.get("href", "")
+            if title in seen_titles_in_site:
+                continue
+            seen_titles_in_site.add(title)
 
-                if not title or not href:
-                    continue
+            full_link = href if href.startswith("http") else urllib.parse.urljoin(prefix, href)
+            uid = extract_unique_id(href)
 
-                # ✅ 제목 기준 중복 제거 (주소 달라도 동일 제목이면 차단)
-                if title in seen_titles_in_site:
-                    continue
-                seen_titles_in_site.add(title)
+            if (name, uid) in seen_within_run:
+                continue
+            seen_within_run.add((name, uid))
 
-                full_link = (
-                    href if href.startswith("http")
-                    else urllib.parse.urljoin(prefix, href)
-                )
+            if any(k.lower() in title.lower() for k in KEYWORDS):
+                sent_items = sent_store.get(name, [])
 
-                uid = extract_unique_id(href)
-
-                # ✅ 실행 중 중복 제거 (사이트 + UID)
-                if (name, uid) in seen_within_run:
-                    continue
-                seen_within_run.add((name, uid))
-
-                # ✅ 키워드 필터 + 누적 중복 제거
-                if any(k.lower() in title.lower() for k in KEYWORDS):
-                    sent_uids = sent_store.get(name, [])
-                    if uid not in sent_uids:
-                        print(f"[{name}] Adding notice: {title}")
+                if use_title_dedup:
+                    if title not in sent_items:
+                        print(f"[{name}] Adding notice (title-based): {title}")
+                        new_notices.append((name, title, title, full_link))
+                else:
+                    if uid not in sent_items:
+                        print(f"[{name}] Adding notice (uid-based): {title}")
                         new_notices.append((name, uid, title, full_link))
 
-            # 페이지 간 딜레이
-            time.sleep(0.2)
+        time.sleep(0.2)
 
-        except Exception as e:
-            print(f"[{name}] error fetching page {page}: {e}")
+    except Exception as e:
+        print(f"[{name}] error fetching page {page}: {e}")
 
-    return new_notices
+return new_notices
+
 
 # ===== 전체 수집 =====
 all_new = {}
