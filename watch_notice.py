@@ -99,54 +99,54 @@ def fetch_site_notices(site):
 use_selenium = "기업마당" in name
 use_title_dedup = name in ["기업마당", "KHIDI"]
 
-for page in range(1, max_pages + 1):
-    url = template.format(page=page)
-    print(f"[{name}] Fetching URL: {url}")
-
-    try:
-        ...
-        items = soup.select(selector)
-
-        unique_items = list(
-            {a.get("href"): a for a in items if a.get("href")}.values()
-        )
-
-        for a in unique_items:
-            title = a.get_text(strip=True)
-            href = a.get("href", "")
-
-            if not title or not href:
-                continue
-
-            if title in seen_titles_in_site:
-                continue
-            seen_titles_in_site.add(title)
-
-            full_link = href if href.startswith("http") else urllib.parse.urljoin(prefix, href)
-            uid = extract_unique_id(href)
-
-            if (name, uid) in seen_within_run:
-                continue
-            seen_within_run.add((name, uid))
-
-            if any(k.lower() in title.lower() for k in KEYWORDS):
-                sent_items = sent_store.get(name, [])
-
-                if use_title_dedup:
-                    if title not in sent_items:
-                        print(f"[{name}] Adding notice (title-based): {title}")
-                        new_notices.append((name, title, title, full_link))
-                else:
-                    if uid not in sent_items:
-                        print(f"[{name}] Adding notice (uid-based): {title}")
-                        new_notices.append((name, uid, title, full_link))
-
-        time.sleep(0.2)
-
-    except Exception as e:
-        print(f"[{name}] error fetching page {page}: {e}")
-
-return new_notices
+    for page in range(1, max_pages + 1):
+        url = template.format(page=page)
+        print(f"[{name}] Fetching URL: {url}")
+    
+        try:
+            ...
+            items = soup.select(selector)
+    
+            unique_items = list(
+                {a.get("href"): a for a in items if a.get("href")}.values()
+            )
+    
+            for a in unique_items:
+                title = a.get_text(strip=True)
+                href = a.get("href", "")
+    
+                if not title or not href:
+                    continue
+    
+                if title in seen_titles_in_site:
+                    continue
+                seen_titles_in_site.add(title)
+    
+                full_link = href if href.startswith("http") else urllib.parse.urljoin(prefix, href)
+                uid = extract_unique_id(href)
+    
+                if (name, uid) in seen_within_run:
+                    continue
+                seen_within_run.add((name, uid))
+    
+                if any(k.lower() in title.lower() for k in KEYWORDS):
+                    sent_items = sent_store.get(name, [])
+    
+                    if use_title_dedup:
+                        if title not in sent_items:
+                            print(f"[{name}] Adding notice (title-based): {title}")
+                            new_notices.append((name, title, title, full_link))
+                    else:
+                        if uid not in sent_items:
+                            print(f"[{name}] Adding notice (uid-based): {title}")
+                            new_notices.append((name, uid, title, full_link))
+    
+            time.sleep(0.2)
+    
+        except Exception as e:
+            print(f"[{name}] error fetching page {page}: {e}")
+    
+    return new_notices
 
 
 # ===== 전체 수집 =====
