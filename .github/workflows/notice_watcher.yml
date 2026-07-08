@@ -26,10 +26,6 @@ jobs:
           pip install requests beautifulsoup4 schedule selenium webdriver-manager pymsteams
 
       - name: Run Notice Watcher
-        env:
-          EMAIL_ADDRESS: ${{ secrets.EMAIL_ADDRESS }}
-          EMAIL_PASSWORD: ${{ secrets.EMAIL_PASSWORD }}
-          TEAMS_WEBHOOK_URL: ${{ secrets.TEAMS_WEBHOOK_URL }}
         run: |
           echo "Job start time: $(date)"
           python watch_notice.py
