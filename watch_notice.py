@@ -1,7 +1,5 @@
 import requests
 from bs4 import BeautifulSoup
-import smtplib
-from email.mime.text import MIMEText
 import os
 import json
 import time
@@ -33,12 +31,6 @@ raw_keywords = os.environ.get(
     "바이오,헬스,임상,의료,의료기기,헬스케어,반려동물난치성"
 )
 KEYWORDS = [k.strip() for k in raw_keywords.split(",") if k.strip()]
-
-EMAIL_ADDRESS = os.environ.get("EMAIL_ADDRESS")
-EMAIL_PASSWORD = os.environ.get("EMAIL_PASSWORD")
-if not EMAIL_ADDRESS or not EMAIL_PASSWORD:
-    print("ERROR: EMAIL_ADDRESS or EMAIL_PASSWORD not set")
-    raise SystemExit(1)
 
 
 # ===== persistence =====
@@ -176,37 +168,3 @@ for site in sites:
     found = fetch_site_notices(site)
     if found:
         all_new.setdefault(site_name, []).extend(found)
-
-
-# ===== 알림 =====
-if not any(all_new.values()):
-    print("ℹ️ 새로운 공고 없음")
-else:
-    lines = []
-    for site_name, notices in all_new.items():
-        lines.append(site_name)
-        for i, (_, uid, title, link) in enumerate(notices, 1):
-            lines.append(f"{i}) {title}\n {link}")
-        lines.append("")
-
-    body = "새로운 공고가 등록되었습니다.\n\n" + "\n".join(lines)
-    subject = "[공고 알림] 새로운 공고 요약"
-
-    send_teams_message(body)
-
-    msg = MIMEText(body)
-    msg["Subject"] = subject
-    msg["From"] = EMAIL_ADDRESS
-    msg["To"] = EMAIL_ADDRESS
-
-    with smtplib.SMTP_SSL("smtp.gmail.com", 465) as smtp:
-        smtp.login(EMAIL_ADDRESS, EMAIL_PASSWORD)
-        smtp.send_message(msg)
-
-    for site_name, notices in all_new.items():
-        seen = set(sent_store.get(site_name, []))
-        for (_, uid, title, _) in notices:
-            seen.add(title if site_name in ["기업마당", "KHIDI"] else uid)
-        sent_store[site_name] = list(seen)
-
-    save_sent(sent_store)
