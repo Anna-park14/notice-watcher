@@ -29,7 +29,13 @@ jobs:
         run: |
           echo "Job start time: $(date)"
           python watch_notice.py
-
+      - name: Run Notice Watcher
+        env:
+          TEAMS_WEBHOOK_URL: ${{ secrets.TEAMS_WEBHOOK_URL }}
+        run: |
+          echo "Job start time: $(date)"
+          python watch_notice.py
+          
       - name: Commit and Push sent_titles.json
         run: |
           git config user.name "github-actions"
